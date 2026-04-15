@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # [SECRET SCANNING DEMO]
 # Dummy API Key to trigger GHAS Secret Scanning
-DUMMY_OPENAI_API_KEY = "sk-SampleDemoKeyForGHAS000000000000000000000000000"
+DUMMY_OPENAI_API_KEY = "sk-SampleDemoKeyForGHAS0000000000000000000000000000"
 
 def mock_llm_call(prompt):
     """

@@ -1,0 +1,5 @@
+Flask==2.0.0
+# Old version of requests to trigger Dependabot
+requests==2.27.1
+# Old version of Werkzeug known to have vulnerabilities
+Werkzeug==2.0.0

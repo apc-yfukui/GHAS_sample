@@ -15,7 +15,7 @@
     <h1>脆弱なAI十徳ナイフ (Vulnerable AI Swiss-Knife)</h1>
     
     <div class="feature">
-        <h2>A. AI Prompt Injection (LLM01)</h2>
+        <h2>A. AI Prompt Injection / LLM01</h2>
         <p>ユーザー入力をAIプロンプトに結合して要約を生成します。</p>
         <textarea id="summary-text" placeholder="ここにテキストを入力..."></textarea>
         <button onclick="summarize()">要約する</button>
@@ -23,7 +23,7 @@
     </div>
 
     <div class="feature">
-        <h2>B. SSRF (A10:2021)</h2>
+        <h2>B. SSRF / A01:2025 Broken Access Control</h2>
         <p>指定したURLのドキュメントを読み込みます。</p>
         <input type="text" id="fetch-url" style="width: 80%;" placeholder="http://example.com/doc.txt">
         <button onclick="fetchUrl()">読み込む</button>
@@ -31,11 +31,36 @@
     </div>
 
     <div class="feature">
-        <h2>C. Cross-Site Scripting (A03:2021)</h2>
+        <h2>C. Cross-Site Scripting / A05:2025 Injection (XSS)</h2>
         <p>AIの回答（Markdown）をプレビューします。</p>
         <textarea id="preview-content" placeholder="<img src=x onerror=alert('XSS')>"></textarea>
         <button onclick="preview()">プレビュー</button>
         <div id="preview-result" class="result"></div>
+    </div>
+
+    <div class="feature">
+        <h2>D. Path Traversal / A01:2025 Broken Access Control</h2>
+        <p>ファイル名を指定してダウンロードします（例: <code>../../etc/passwd</code>）。</p>
+        <input type="text" id="download-file" style="width: 80%;" placeholder="readme.txt">
+        <button onclick="downloadFile()">ダウンロード</button>
+        <div id="download-result" class="result"></div>
+    </div>
+
+    <div class="feature">
+        <h2>E. SQL Injection / A05:2025 Injection</h2>
+        <p>ユーザー名でユーザー検索します（例: <code>' OR '1'='1</code>）。</p>
+        <input type="text" id="user-name" style="width: 80%;" placeholder="admin">
+        <button onclick="getUser()">検索</button>
+        <div id="user-result" class="result"></div>
+    </div>
+
+    <div class="feature">
+        <h2>F. Weak Cryptography / A04:2025 Cryptographic Failures</h2>
+        <p>MD5でパスワードをハッシュして登録します（破られた暗号アルゴリズム）。</p>
+        <input type="text" id="reg-username" style="width: 40%;" placeholder="username">
+        <input type="password" id="reg-password" style="width: 40%;" placeholder="password">
+        <button onclick="register()">登録</button>
+        <div id="register-result" class="result"></div>
     </div>
 
     <script>
@@ -71,6 +96,32 @@
             const data = await resp.json();
             // [VULNERABILITY] Use of innerHTML without sanitization
             document.getElementById('preview-result').innerHTML = data.html;
+        }
+
+        async function downloadFile() {
+            const file = document.getElementById('download-file').value;
+            const resp = await fetch(`/download?file=${encodeURIComponent(file)}`);
+            const data = await resp.json();
+            document.getElementById('download-result').innerText = data.content || data.error;
+        }
+
+        async function getUser() {
+            const name = document.getElementById('user-name').value;
+            const resp = await fetch(`/user?name=${encodeURIComponent(name)}`);
+            const data = await resp.json();
+            document.getElementById('user-result').innerText = JSON.stringify(data);
+        }
+
+        async function register() {
+            const username = document.getElementById('reg-username').value;
+            const password = document.getElementById('reg-password').value;
+            const resp = await fetch('/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+            });
+            const data = await resp.json();
+            document.getElementById('register-result').innerText = JSON.stringify(data);
         }
     </script>
 </body>
